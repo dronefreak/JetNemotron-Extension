@@ -118,6 +118,8 @@ print("HybridJetModel params (M):", count_parameters(model))
 
 ```
 
+You could specify `out_channels=19` to simulate CityScapes semantic segmentation task, or `out_channels=1` to perhaps use the pipeline with a monocular depth estimation task, or `out_channels=3` to emulate a RGB reconstruction, image enhancement, image denoising, super-resolution etc. type of vision-based tasks.
+
 ## 🧩 Extending the Model
 
 - Add more JetBlocks for deeper attention modeling.
