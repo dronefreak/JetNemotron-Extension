@@ -14,16 +14,17 @@ I have attempted to make the following happen:
 
 This work is inspired from [cityzen95/JetBlock-Attention](https://github.com/cityzen95/JetBlock-Attention/) and of course the original authors from NVIDIA [NVlabs/Jet-Nemotron](https://github.com/NVlabs/Jet-Nemotron)
 
-## ⚙️ Usage
-This package has been tested on Ubuntu 24.04, can't say for Windows (I do not have a Windows machine to test on personally), please do not forget to install the package inside your conda environment.
-```
+## ⚙️ Installation
+
+Tested on **Ubuntu 24.04** with Python 3.11 and PyTorch ≥ 2.0.
+
+```bash
 conda env create -f environment.yml
 conda activate jet-nemotron
-pip3 install -e .
+pip install -e .
 ```
 And then simply run:
-```
-
+```python
 python3 examples.py
 ```
 ## 💻 Explanation of Examples
@@ -32,6 +33,8 @@ Inside this package I have created the following implementations (all these exam
 1. First is of course the JetBlock-Attention which is simply a copy-paste from the original author [cityzen95/JetBlock-Attention](https://github.com/cityzen95/JetBlock-Attention/)
 ```
 from jet_nemotron_nvidia.jetblock import JetBlockAttention
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad) / 1e6
 x = torch.randn(2, 16, 1536)  # [batch, seq_len, hidden_size]
 block = JetBlockAttention(
   hidden_size=1536, n_heads=12, qk_dim=96, v_dim=256, kernel_size=4, use_rope=True
