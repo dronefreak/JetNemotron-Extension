@@ -62,7 +62,7 @@ print("PatchEmbed params (M):", count_parameters(embed))
 print("JetBlock params (M):", count_parameters(jetblock))
 ```
 
-3. Third is an extention to the second, where I simply add a decoder head to the jetblock attention block to create something like Patch embeddings -> JetBlocks -> Decoder pipeline. The patch decoder block is simply an implementation that converts the 'patched' sequential attention-rich information from the JetBlock module to recognisable image data.
+3. Third is an extention to the second, where I simply add a decoder head to the jetblock attention block to create something like Patch embeddings -> JetBlocks -> Decoder pipeline. The patch decoder block is simply an implementation that converts the 'patched', sequential, attention-rich information from the JetBlock module to recognisable image data.
 
 ```
 from jet_nemotron_nvidia.jetblock import JetBlockAttention
