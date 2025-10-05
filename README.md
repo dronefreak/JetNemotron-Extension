@@ -32,59 +32,59 @@ Inside this package I have created the following implementations (all these exam
 1. First is of course the JetBlock-Attention which is simply a copy-paste from the original author [cityzen95/JetBlock-Attention](https://github.com/cityzen95/JetBlock-Attention/)
 ```
 from jet_nemotron_nvidia.jetblock import JetBlockAttention
- x = torch.randn(2, 16, 1536)  # [batch, seq_len, hidden_size]
- block = JetBlockAttention(
-     hidden_size=1536, n_heads=12, qk_dim=96, v_dim=256, kernel_size=4, use_rope=True
- )
- out = block(x)
- print("Input:", x.shape, "Output:", out.shape)
- print("JetBlock params (M):", count_parameters(block))
+x = torch.randn(2, 16, 1536)  # [batch, seq_len, hidden_size]
+block = JetBlockAttention(
+  hidden_size=1536, n_heads=12, qk_dim=96, v_dim=256, kernel_size=4, use_rope=True
+)
+out = block(x)
+print("Input:", x.shape, "Output:", out.shape)
+print("JetBlock params (M):", count_parameters(block))
 ```
-2. Second, is the patch embedding design, which basically takes an input image, breaks it down into smaller patches (to kind of simulate 'sequential information' for the JetBlock module). These image patches can then be used with the JetBlock Attention block.
+1. Second, is the patch embedding design, which basically takes an input image, breaks it down into smaller patches (to kind of simulate 'sequential information' for the JetBlock module). These image patches can then be used with the JetBlock Attention block.
 
 ```
 from jet_nemotron_nvidia.jet_image_embedding import JetImageEmbed
 from jet_nemotron_nvidia.jetblock import JetBlockAttention
- images = torch.randn(2, 3, 224, 224)
- embed = JetImageEmbed(img_size=224, patch_size=16, embed_dim=1536)
- jetblock = JetBlockAttention(
-     hidden_size=1536, n_heads=12, qk_dim=96, v_dim=256, kernel_size=4, use_rope=True
- )
- patches = embed(images)
- out = jetblock(patches)
- print("Input images:", images.shape)
- print("Patch embeddings:", patches.shape)
- print("Output after JetBlock:", out.shape)
- print("PatchEmbed params (M):", count_parameters(embed))
- print("JetBlock params (M):", count_parameters(jetblock))
+images = torch.randn(2, 3, 224, 224)
+embed = JetImageEmbed(img_size=224, patch_size=16, embed_dim=1536)
+jetblock = JetBlockAttention(
+  hidden_size=1536, n_heads=12, qk_dim=96, v_dim=256, kernel_size=4, use_rope=True
+)
+patches = embed(images)
+out = jetblock(patches)
+print("Input images:", images.shape)
+print("Patch embeddings:", patches.shape)
+print("Output after JetBlock:", out.shape)
+print("PatchEmbed params (M):", count_parameters(embed))
+print("JetBlock params (M):", count_parameters(jetblock))
 ```
 
-3. Third is an extention to the second, where I simply add a decoder head to the jetblock attention block to create something like Patch embeddings -> JetBlocks -> Decoder pipeline. The patch decoder block is simply an implementation that converts the 'patched' sequential attention-rich information from the JetBlock module to recognisable image data.
+1. Third is an extention to the second, where I simply add a decoder head to the jetblock attention block to create something like Patch embeddings -> JetBlocks -> Decoder pipeline. The patch decoder block is simply an implementation that converts the 'patched' sequential attention-rich information from the JetBlock module to recognisable image data.
 
 ```
 from jet_nemotron_nvidia.jetblock import JetBlockAttention
 from jet_nemotron_nvidia.jet_image_embedding import JetImageEmbed, PatchDecoder
 
- images = torch.randn(2, 3, 224, 224)
+images = torch.randn(2, 3, 224, 224)
 
- # Patch encoder
- embed = JetImageEmbed(img_size=224, patch_size=16, embed_dim=1536)
- jetblock = JetBlockAttention(
-     hidden_size=1536, n_heads=12, qk_dim=96, v_dim=256, kernel_size=4, use_rope=True
- )
- decoder = PatchDecoder(embed_dim=1536, out_channels=19, patch_size=16).to(
-     get_device()
- )  # 19 class semantic segmentation for example, CityScapes
+# Patch encoder
+embed = JetImageEmbed(img_size=224, patch_size=16, embed_dim=1536)
+jetblock = JetBlockAttention(
+  hidden_size=1536, n_heads=12, qk_dim=96, v_dim=256, kernel_size=4, use_rope=True
+)
+decoder = PatchDecoder(embed_dim=1536, out_channels=19, patch_size=16).to(
+  get_device()
+)  # 19 class semantic segmentation for example, CityScapes
 
- patches = embed(images)
- features = jetblock(patches)
- preds = decoder(features, img_size=(224, 224))
+patches = embed(images)
+features = jetblock(patches)
+preds = decoder(features, img_size=(224, 224))
 
- print("Input images:", images.shape)
- print("Dense predictions:", preds.shape)  # [B, out_channels, H, W]
- print("PatchEmbed params (M):", count_parameters(embed))
- print("JetBlock params (M):", count_parameters(jetblock))
- print("Decoder params (M):", count_parameters(decoder))
+print("Input images:", images.shape)
+print("Dense predictions:", preds.shape)  # [B, out_channels, H, W]
+print("PatchEmbed params (M):", count_parameters(embed))
+print("JetBlock params (M):", count_parameters(jetblock))
+print("Decoder params (M):", count_parameters(decoder))
 
 ```
 
